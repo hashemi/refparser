@@ -59,3 +59,22 @@ def _parse_records_pubmed(data_file):
             record += l
     if record != '':
         yield record
+
+def parse_fields(raw_record, data_format):
+    """
+    Generates fields from the raw data of a single record.
+    Currently only accepts the RIS file format.
+    """
+    if data_format == 'RIS':
+        return _parse_fields_ris(raw_record)
+    else:
+        raise UnknownReferenceFormat
+
+def _parse_fields_ris(raw_record):
+    for l in raw_record.splitlines():
+        try:
+            field, value = l.split('  - ', 1)
+            if len(field) == 2:
+                yield (field, value)
+        except ValueError:
+            pass

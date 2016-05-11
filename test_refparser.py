@@ -1,5 +1,5 @@
 import unittest
-from refparser import parse_records, ReferenceSyntaxError
+from refparser import parse_records, parse_fields, ReferenceSyntaxError
 
 class TestRefParser(unittest.TestCase):
     def match_parsed_records(self, data_filename, data_format, expected_record_filename,
@@ -51,6 +51,18 @@ class TestRefParser(unittest.TestCase):
     def test_parse_pubmed_to_records_last_record(self):
         self.match_parsed_records('test_data/pubmed/valid.txt', 'PubMed',
             'test_data/pubmed/valid_last_record.txt', match_last_record=True)
+    
+    def test_parse_ris_fields(self):
+        with open('test_data/ris/valid.ris', 'r') as data_file:
+            first_record = next(parse_records(data_file, 'RIS'))
+        parsed_fields = list(parse_fields(first_record, 'RIS'))
+        expected_fields = [
+            ('TY', 'JOUR'),
+            ('ID', '123456'),
+            ('A1', 'Cushing, Harvey'),
+            ('ER', ''),
+        ]
+        self.assertEqual(parsed_fields, expected_fields)
 
 if __name__ == '__main__':
     unittest.main()
