@@ -2,78 +2,85 @@ import unittest
 from refparser import parse_records, parse_fields, ReferenceSyntaxError
 
 class TestRefParser(unittest.TestCase):
-    def match_parsed_records(self, data_filename, data_format, expected_record_filename,
-        match_first_record=False, match_last_record=False):
-        # one and only one can be true
-        if match_first_record == match_last_record:
-            raise
+    def test_parsing_records(self):
+        """
+        Parse all the records contained within a file and compare the first and
+        last records to the contents of files containing the expected results.
+        """
+        records_files = (
+            (
+                'test_data/ris/valid.ris',
+                'RIS',
+                'test_data/ris/valid_first_record.ris',
+                'test_data/ris/valid_last_record.ris',
+            ),
+            (
+                'test_data/pubmed/valid.txt',
+                'PubMed',
+                'test_data/pubmed/valid_first_record.txt',
+                'test_data/pubmed/valid_last_record.txt',
+            )
+        )
 
-        with open(expected_record_filename, 'r') as expected_record_file:
-            expected_record = expected_record_file.read()
+        for data_fn, data_format, first_exp_fn, last_exp_fn in records_files:
+            with self.subTest(data_fn=data_fn, data_format=data_format):
+                with open(data_fn, 'r') as data_file:
+                    parsed_records = parse_records(data_file, data_format)
+                    first_record = next(parsed_records)
+                    last_record = first_record
+                    for last_record in parsed_records: pass
+                    for exp_fn, parsed_record in ((first_exp_fn, first_record), (last_exp_fn, last_record)):
+                        with self.subTest(exp_fn=exp_fn):
+                            with open(exp_fn, 'r') as exp_file:
+                                exp_record = exp_file.read()
+                            self.assertEqual(exp_record, parsed_record)
 
-        with open(data_filename, 'r') as data_file:
-            parsed_records = parse_records(data_file, data_format)
-            if match_first_record:
-                parsed_record = next(parsed_records)
-            elif match_last_record:
-                for parsed_record in parsed_records: pass
-        self.assertEqual(expected_record, parsed_record)
+    def test_parsing_invalid_files(self):
+        """
+        Try to parse the records of invalid files and assert that they
+        raise ReferenceSyntaxError as expected.
+        """
+        invalid_files = (
+            ('ris/unclosed_first_record.ris', 'RIS'),
+            ('ris/unclosed_last_record.ris', 'RIS'),
+            ('ris/unopened_first_record.ris', 'RIS'),
+            ('ris/unopened_last_record.ris', 'RIS'),
+        )
+        for filename, data_format in invalid_files:
+            with self.subTest(filename=filename, data_format=data_format):
+                with open('test_data/{filename}'.format(filename=filename)) as data_file:
+                    with self.assertRaises(ReferenceSyntaxError):
+                        for _ in parse_records(data_file, data_format): pass
 
-    def test_parse_ris_to_records(self):
-        self.match_parsed_records('test_data/ris/valid.ris', 'RIS',
-            'test_data/ris/valid_first_record.ris', match_first_record=True)
-
-    def test_parse_ris_to_records_last_record(self):
-        self.match_parsed_records('test_data/ris/valid.ris', 'RIS',
-            'test_data/ris/valid_last_record.ris', match_last_record=True)
-
-    def parse_invalid_ris(self, filename):
-        with open('test_data/ris/{filename}'.format(filename=filename)) as data_file:
-            with self.assertRaises(ReferenceSyntaxError):
-                for _ in parse_records(data_file, 'RIS'): pass
-    
-    def test_parse_unclosed_first_record_ris(self):
-        self.parse_invalid_ris('unclosed_first_record.ris')
-    
-    def test_parse_unclosed_last_record_ris(self):
-        self.parse_invalid_ris('unclosed_last_record.ris')
-    
-    def test_parse_unopened_first_record_ris(self):
-        self.parse_invalid_ris('unopened_first_record.ris')
-
-    def test_parse_unopened_last_record_ris(self):
-        self.parse_invalid_ris('unopened_last_record.ris')
-
-    def test_parse_pubmed_to_records_first_record(self):
-        self.match_parsed_records('test_data/pubmed/valid.txt', 'PubMed',
-            'test_data/pubmed/valid_first_record.txt', match_first_record=True)
-    
-    def test_parse_pubmed_to_records_last_record(self):
-        self.match_parsed_records('test_data/pubmed/valid.txt', 'PubMed',
-            'test_data/pubmed/valid_last_record.txt', match_last_record=True)
-    
-    def test_parse_ris_fields(self):
-        with open('test_data/ris/valid.ris', 'r') as data_file:
-            first_record = next(parse_records(data_file, 'RIS'))
-        parsed_fields = list(parse_fields(first_record, 'RIS'))
-        expected_fields = [
-            ('TY', 'JOUR'),
-            ('ID', '123456'),
-            ('A1', 'Cushing, Harvey'),
-            ('ER', ''),
-        ]
-        self.assertEqual(parsed_fields, expected_fields)
-
-    def test_parse_pubmed_fields(self):
-        with open('test_data/pubmed/valid.txt', 'r') as data_file:
-            first_record = next(parse_records(data_file, 'PubMed'))
-        parsed_fields = list(parse_fields(first_record, 'PubMed'))
-        expected_fields = [
-            ('PMID', '123456'),
-            ('OWN' , 'NLM'),
-            ('STAT', 'Publisher'),
-        ]
-        self.assertEqual(parsed_fields, expected_fields)
+    def test_parsing_fields(self):
+        """
+        Get the raw data of the first record from each file then parse that
+        raw data into fields and compare it to the expected list of fields provided.
+        """
+        record_files_and_fields = (
+            ('test_data/ris/valid.ris', 'RIS',
+                [
+                    ('TY', 'JOUR'),
+                    ('ID', '123456'),
+                    ('A1', 'Cushing, Harvey'),
+                    ('ER', ''),
+                ]
+            ),
+            ('test_data/pubmed/valid.txt', 'PubMed',
+                [
+                    ('PMID', '123456'),
+                    ('OWN' , 'NLM'),
+                    ('STAT', 'Publisher'),
+                ]
+            ),
+        )
+        for filename, data_format, expected_fields in record_files_and_fields:
+            with self.subTest(filename=filename,
+                data_format=data_format, expected_fields=expected_fields):
+                with open(filename, 'r') as data_file:
+                    first_record = next(parse_records(data_file, data_format))
+                parsed_fields = list(parse_fields(first_record, data_format))
+                self.assertEqual(parsed_fields, expected_fields)
 
 if __name__ == '__main__':
     unittest.main()
