@@ -2,19 +2,30 @@ import unittest
 from refparser import parse_records, ReferenceSyntaxError
 
 class TestRefParser(unittest.TestCase):
+    def match_parsed_records(self, data_filename, data_format, expected_record_filename,
+        match_first_record=False, match_last_record=False):
+        # one and only one can be true
+        if match_first_record == match_last_record:
+            raise
+
+        with open(expected_record_filename, 'r') as expected_record_file:
+            expected_record = expected_record_file.read()
+
+        with open(data_filename, 'r') as data_file:
+            parsed_records = parse_records(data_file, data_format)
+            if match_first_record:
+                parsed_record = next(parsed_records)
+            elif match_last_record:
+                for parsed_record in parsed_records: pass
+        self.assertEqual(expected_record, parsed_record)
+
     def test_parse_ris_to_records(self):
-        with open('test_data/ris/valid_first_record.ris', 'r') as first_record_file:
-            expected_first_record = first_record_file.read()
-            with open('test_data/ris/valid.ris', 'r') as data_file:
-                parsed_first_record = next(parse_records(data_file, 'RIS'))
-                self.assertEqual(parsed_first_record, expected_first_record)
-    
+        self.match_parsed_records('test_data/ris/valid.ris', 'RIS',
+            'test_data/ris/valid_first_record.ris', match_first_record=True)
+
     def test_parse_ris_to_records_last_record(self):
-        with open('test_data/ris/valid_last_record.ris', 'r') as last_record_file:
-            expected_last_record = last_record_file.read()
-            with open('test_data/ris/valid.ris', 'r') as data_file:
-                for parsed_last_record in parse_records(data_file, 'RIS'): pass
-                self.assertEqual(parsed_last_record, expected_last_record)
+        self.match_parsed_records('test_data/ris/valid.ris', 'RIS',
+            'test_data/ris/valid_last_record.ris', match_last_record=True)
 
     def parse_invalid_ris(self, filename):
         with open('test_data/ris/{filename}'.format(filename=filename)) as data_file:
@@ -33,20 +44,13 @@ class TestRefParser(unittest.TestCase):
     def test_parse_unopened_last_record_ris(self):
         self.parse_invalid_ris('unopened_last_record.ris')
 
-
     def test_parse_pubmed_to_records_first_record(self):
-        with open('test_data/pubmed/valid_first_record.txt', 'r') as first_record_file:
-            expected_first_record = first_record_file.read()
-            with open('test_data/pubmed/valid.txt', 'r') as data_file:
-                parsed_first_record = next(parse_records(data_file, 'PubMed'))
-                self.assertEqual(parsed_first_record, expected_first_record)
+        self.match_parsed_records('test_data/pubmed/valid.txt', 'PubMed',
+            'test_data/pubmed/valid_first_record.txt', match_first_record=True)
     
     def test_parse_pubmed_to_records_last_record(self):
-        with open('test_data/pubmed/valid_last_record.txt', 'r') as last_record_file:
-            expected_last_record = last_record_file.read()
-            with open('test_data/pubmed/valid.txt', 'r') as data_file:
-                for parsed_last_record in parse_records(data_file, 'PubMed'): pass
-                self.assertEqual(parsed_last_record, expected_last_record)
+        self.match_parsed_records('test_data/pubmed/valid.txt', 'PubMed',
+            'test_data/pubmed/valid_last_record.txt', match_last_record=True)
 
 if __name__ == '__main__':
     unittest.main()
