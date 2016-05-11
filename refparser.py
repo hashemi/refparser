@@ -4,14 +4,25 @@ class ReferenceSyntaxError(Exception):
     """
     pass
 
+class UnknownReferenceFormat(Exception):
+    """
+    The format of the refrences data file is unknown.
+    """
+    pass
+
 def parse_records(data_file, data_format):
     """
     Generates records in raw data from a file containing multiple records.
-    Currently only accepts the RIS file format.    
+    Currently accepts RIS and PubMed file formats.
     """
-    if data_format != 'RIS':
-        raise ReferenceSyntaxError
-    
+    if data_format == 'RIS':
+        return _parse_records_ris(data_file)
+    elif data_format == 'PubMed':
+        return _parse_records_pubmed(data_file)
+    else:
+        raise UnknownReferenceFormat
+
+def _parse_records_ris(data_file):
     in_record = False
     record = ''
     
@@ -34,3 +45,16 @@ def parse_records(data_file, data_format):
     if in_record:
         # reached end of file with an open record
         raise ReferenceSyntaxError
+
+def _parse_records_pubmed(data_file):
+    record = ''
+
+    for l in data_file:
+        if l.strip() == '':
+            # records are seperated by empty lines
+            if record != '':
+                yield record
+        else:
+            record += l
+    if record != '':
+        yield record

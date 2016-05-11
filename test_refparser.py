@@ -26,5 +26,13 @@ class TestRefParser(unittest.TestCase):
     def test_parse_unopened_last_record_ris(self):
         self.parse_invalid_ris('unopened_last_record.ris')
 
+
+    def test_parse_pubmed_to_records(self):
+        with open('test_data/pubmed/valid_first_record.txt', 'r') as first_record_file:
+            expected_first_record = first_record_file.read()
+            with open('test_data/pubmed/valid.txt', 'r') as data_file:
+                parsed_first_record = next(parse_records(data_file, 'PubMed'))
+                self.assertEqual(parsed_first_record, expected_first_record)
+
 if __name__ == '__main__':
     unittest.main()

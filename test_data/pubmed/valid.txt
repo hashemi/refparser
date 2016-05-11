@@ -1,0 +1,8 @@
+
+PMID- 123456
+OWN - NLM
+STAT- Publisher
+
+PMID- 654321
+OWN - NLM
+STAT- PubMed-not-MEDLINE
