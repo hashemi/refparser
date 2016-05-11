@@ -67,6 +67,8 @@ def parse_fields(raw_record, data_format):
     """
     if data_format == 'RIS':
         return _parse_fields_ris(raw_record)
+    elif data_format == 'PubMed':
+        return _parse_fields_pubmed(raw_record)
     else:
         raise UnknownReferenceFormat
 
@@ -75,6 +77,16 @@ def _parse_fields_ris(raw_record):
         try:
             field, value = l.split('  - ', 1)
             if len(field) == 2:
+                yield (field, value)
+        except ValueError:
+            pass
+
+def _parse_fields_pubmed(raw_record):
+    for l in raw_record.splitlines():
+        try:
+            field, value = l.split('- ', 1)
+            if len(field) == 4:
+                field = field.strip()
                 yield (field, value)
         except ValueError:
             pass

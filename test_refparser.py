@@ -64,5 +64,16 @@ class TestRefParser(unittest.TestCase):
         ]
         self.assertEqual(parsed_fields, expected_fields)
 
+    def test_parse_pubmed_fields(self):
+        with open('test_data/pubmed/valid.txt', 'r') as data_file:
+            first_record = next(parse_records(data_file, 'PubMed'))
+        parsed_fields = list(parse_fields(first_record, 'PubMed'))
+        expected_fields = [
+            ('PMID', '123456'),
+            ('OWN' , 'NLM'),
+            ('STAT', 'Publisher'),
+        ]
+        self.assertEqual(parsed_fields, expected_fields)
+
 if __name__ == '__main__':
     unittest.main()
