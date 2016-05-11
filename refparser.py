@@ -54,6 +54,7 @@ def _parse_records_pubmed(data_file):
             # records are seperated by empty lines
             if record != '':
                 yield record
+                record = ''
         else:
             record += l
     if record != '':
