@@ -112,6 +112,21 @@ class RISRecord:
     def end_page(self):
         return self._pages[1]
 
+    @property
+    def authors_lastnames(self):
+        def guess_lastname(author):
+            if ',' in author:
+                # Lastname, F. or Lastname, Firstname
+                return author.split(',', 1)[0]
+            elif author.endswith('.'):
+                # Lastname F.
+                return author.split(' ', 1)[0]
+            else:
+                # Firstname Lastname
+                return author.rsplit(' ', 1)[-1]
+
+        return [guess_lastname(author) for author in self.authors]
+
 def parse_records(data_file, data_format):
     """
     Generates records in raw data from a file containing multiple records.
