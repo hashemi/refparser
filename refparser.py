@@ -60,6 +60,58 @@ class RISRecord:
                 values += self._raw_fields_aggregate[field]
         if values: return values
 
+    @property
+    def title(self):
+        return self._first_raw_value('TI', 'T1')
+
+
+    @property
+    def abstract(self):
+        value = self._first_raw_aggregate('AB', 'N2')
+
+        # some records break the abstract into several records
+        if value: return '\n'.join(value)
+
+    @property
+    def authors(self):
+        return self._all_raw_values('AU', 'A1', 'A2', 'A3')
+
+    @property
+    def journal_names(self):
+        # a record may include multiple names (eg, abbreviated & full)
+        value = self._all_raw_values('JA', 'JO', 'JF')
+        if value:
+            return set(value)
+
+    @property
+    def issn(self):
+        return self._first_raw_value('SN')
+
+    @property
+    def volume(self):
+        return self._first_raw_value('VL')
+
+    @property
+    def issue(self):
+        return self._first_raw_value('IS')
+
+    @property
+    def _pages(self):
+        start = self._first_raw_value('SP')
+        end = self._first_raw_value('EP')
+        if start and not end:
+            if '-' in start:
+                start, end = start.split('-', 1)
+        return (start, end)
+
+    @property
+    def start_page(self):
+        return self._pages[0]
+
+    @property
+    def end_page(self):
+        return self._pages[1]
+
 def parse_records(data_file, data_format):
     """
     Generates records in raw data from a file containing multiple records.
