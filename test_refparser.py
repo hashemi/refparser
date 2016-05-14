@@ -148,5 +148,20 @@ class TestNormalizers(unittest.TestCase):
                     expected_result
                 )
 
+    def test_issn_mappings(self):
+        cases = (
+            ('1111-111Z', '1111-111Z'),
+            (None, None),
+            ('2151-4658', '2151-464X'),
+            ('2151-464X', '2151-464X'),
+
+        )
+        for issn, expected_result in cases:
+            with self.subTest(issn=issn):
+                self.assertEqual(
+                    normalize_issn(issn),
+                    expected_result
+                )
+
 if __name__ == '__main__':
     unittest.main()

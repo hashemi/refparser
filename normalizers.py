@@ -12,3 +12,7 @@ def normalize_page_range(start, end):
         end = start[:len(start)-len(end)] + end
 
     return '{}-{}'.format(start, end)
+
+from issn_mappings import _issn_mappings
+def normalize_issn(issn):
+    return _issn_mappings.get(issn, issn)
