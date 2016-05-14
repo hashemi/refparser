@@ -10,6 +10,20 @@ class UnknownReferenceFormat(Exception):
     """
     pass
 
+class RISRecord:
+    def __init__(self, raw_data):
+        self._raw_data = raw_data
+    
+    def raw_fields(self):
+        'Returns a generator of tuples containing each raw fields name and value.'
+        for line in self._raw_data.splitlines():
+            try:
+                field, value = line.split('  - ', 1)
+                if len(field) == 2:
+                    yield (field, value)
+            except ValueError: # couldn't split into 2
+                pass
+
 def parse_records(data_file, data_format):
     """
     Generates records in raw data from a file containing multiple records.
@@ -73,13 +87,7 @@ def parse_fields(raw_record, data_format):
         raise UnknownReferenceFormat
 
 def _parse_fields_ris(raw_record):
-    for l in raw_record.splitlines():
-        try:
-            field, value = l.split('  - ', 1)
-            if len(field) == 2:
-                yield (field, value)
-        except ValueError:
-            pass
+    return RISRecord(raw_record).raw_fields()
 
 def _parse_fields_pubmed(raw_record):
     for l in raw_record.splitlines():
