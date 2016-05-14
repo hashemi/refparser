@@ -125,5 +125,28 @@ class TestRefParser(unittest.TestCase):
 
         self.assertEqual(record_values, expected_values)
 
+from normalizers import *
+
+class TestNormalizers(unittest.TestCase):
+    def test_normalize_page_range(self):
+        cases = (
+            ((None, None), None),
+            (('123', None), '123-123'),
+            (('123', ''), '123-123'),
+            ((None, '123'), None),
+            (('123', '4'), '123-124'),
+            (('111', '22'), '111-122'),
+            (('123', '456'), '123-456'),
+            (('99', '100'), '99-100'),
+            (('123-34', None), '123-134'),
+            (('123-34', ''), '123-134'),
+        )
+        for args, expected_result in cases:
+            with self.subTest(args=args):
+                self.assertEqual(
+                    normalize_page_range(*args),
+                    expected_result
+                )
+
 if __name__ == '__main__':
     unittest.main()
