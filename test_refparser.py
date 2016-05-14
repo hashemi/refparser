@@ -1,7 +1,11 @@
 import unittest
-from refparser import parse_records, parse_fields, ReferenceSyntaxError
+from refparser import *
 
 class TestRefParser(unittest.TestCase):
+    def setUp(self):
+        with open('test_data/ris/complex_record.ris') as f: ris_record = f.read()
+        self.complex_ris_record = RISRecord(ris_record)
+
     def test_parsing_records(self):
         """
         Parse all the records contained within a file and compare the first and
@@ -81,6 +85,26 @@ class TestRefParser(unittest.TestCase):
                     first_record = next(parse_records(data_file, data_format))
                 parsed_fields = list(parse_fields(first_record, data_format))
                 self.assertEqual(parsed_fields, expected_fields)
+
+    def test_all_raw_values(self):
+        self.assertEqual(
+            self.complex_ris_record._all_raw_values('AU', 'A1'),
+            ['Zoidberg J.A.', 'Leela, T.', 'Bender Bending Rodríguez', 'Conrad, H.', 'Fansworth H.'])
+
+    def test_first_raw_aggregate(self):
+        self.assertEqual(
+            self.complex_ris_record._first_raw_aggregate('AU', 'A1'),
+            ['Zoidberg J.A.'])
+
+    def test_first_raw_value(self):
+        self.assertEqual(
+            self.complex_ris_record._first_raw_value('AU', 'A1'),
+            'Zoidberg J.A.')
+
+    def test_nonexistant_raw_value(self):
+        self.assertIsNone(
+            self.complex_ris_record._first_raw_value('A2')
+        )
 
 if __name__ == '__main__':
     unittest.main()

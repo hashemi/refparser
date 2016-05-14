@@ -13,7 +13,13 @@ class UnknownReferenceFormat(Exception):
 class RISRecord:
     def __init__(self, raw_data):
         self._raw_data = raw_data
-    
+
+        self._raw_fields_aggregate = {}
+        for field, value in self.raw_fields():
+            if not field in self._raw_fields_aggregate:
+                self._raw_fields_aggregate[field] = []
+            self._raw_fields_aggregate[field].append(value)
+
     def raw_fields(self):
         'Returns a generator of tuples containing each raw fields name and value.'
         for line in self._raw_data.splitlines():
@@ -23,6 +29,36 @@ class RISRecord:
                     yield (field, value)
             except ValueError: # couldn't split into 2
                 pass
+
+    def _first_raw_aggregate(self, *fields):
+        """
+        Retruns the first non-empty list values of within one field that match
+        one of the field names passed or None if there was no match.
+        """
+        for field in fields:
+            if field in self._raw_fields_aggregate:
+                return self._raw_fields_aggregate[field]
+
+    def _first_raw_value(self, *fields):
+        """
+        Retruns the first value of the first field that matches one of the
+        field names passed or None if there was no match.
+        """
+        aggregate = self._first_raw_aggregate(*fields)
+        if aggregate:
+            return aggregate[0]
+
+    def _all_raw_values(self, *fields):
+        """
+        Returns all values that match any of the passed fields or None if no values
+        were found. The values are ordered by the order of the passed field names first
+        then by the order in which they appear in the record.
+        """
+        values = []
+        for field in fields:
+            if field in self._raw_fields_aggregate:
+                values += self._raw_fields_aggregate[field]
+        if values: return values
 
 def parse_records(data_file, data_format):
     """
@@ -39,7 +75,7 @@ def parse_records(data_file, data_format):
 def _parse_records_ris(data_file):
     in_record = False
     record = ''
-    
+
     for l in data_file:
         if l.startswith('TY  - '):
             if in_record:
