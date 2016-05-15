@@ -1,5 +1,6 @@
 import unittest
 from refparser.parsers import *
+from refparser.exceptions import *
 
 class TestRefParser(unittest.TestCase):
     def setUp(self):
