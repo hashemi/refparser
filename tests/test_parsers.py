@@ -75,6 +75,7 @@ class TestRefParser(unittest.TestCase):
                 [
                     ('PMID', '123456'),
                     ('OWN' , 'NLM'),
+                    ('AB', 'This is an example of a long field where the field might actually end up\nbeing broken down over multiple lines.'),
                     ('STAT', 'Publisher'),
                 ]
             ),

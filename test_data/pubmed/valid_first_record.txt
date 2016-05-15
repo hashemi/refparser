@@ -1,3 +1,5 @@
 PMID- 123456
 OWN - NLM
+AB  - This is an example of a long field where the field might actually end up
+      being broken down over multiple lines.
 STAT- Publisher
