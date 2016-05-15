@@ -10,6 +10,7 @@ class UnknownReferenceFormat(Exception):
     """
     pass
 
+from .utils import cached_property
 from .normalizers import normalize_page_range, \
     normalize_text_value, \
     normalize_list_direction
@@ -28,7 +29,7 @@ class RISRecord:
             except ValueError: # couldn't split into 2
                 pass
 
-    @property
+    @cached_property
     def _raw_fields_aggregate(self):
         aggregate = {}
         for field, value in self.raw_fields():
@@ -67,42 +68,42 @@ class RISRecord:
                 values += self._raw_fields_aggregate[field]
         if values: return values
 
-    @property
+    @cached_property
     def title(self):
         return self._first_raw_value('TI', 'T1')
 
 
-    @property
+    @cached_property
     def abstract(self):
         value = self._first_raw_aggregate('AB', 'N2')
 
         # some records break the abstract into several records
         if value: return '\n'.join(value)
 
-    @property
+    @cached_property
     def authors(self):
         return self._all_raw_values('AU', 'A1', 'A2', 'A3')
 
-    @property
+    @cached_property
     def journal_names(self):
         # a record may include multiple names (eg, abbreviated & full)
         value = self._all_raw_values('JA', 'JO', 'JF')
         if value:
             return set(value)
 
-    @property
+    @cached_property
     def issn(self):
         return self._first_raw_value('SN')
 
-    @property
+    @cached_property
     def volume(self):
         return self._first_raw_value('VL')
 
-    @property
+    @cached_property
     def issue(self):
         return self._first_raw_value('IS')
 
-    @property
+    @cached_property
     def _pages(self):
         start = self._first_raw_value('SP')
         end = self._first_raw_value('EP')
@@ -111,15 +112,15 @@ class RISRecord:
                 start, end = start.split('-', 1)
         return (start, end)
 
-    @property
+    @cached_property
     def start_page(self):
         return self._pages[0]
 
-    @property
+    @cached_property
     def end_page(self):
         return self._pages[1]
 
-    @property
+    @cached_property
     def authors_lastnames(self):
         def guess_lastname(author):
             if ',' in author:
@@ -134,7 +135,7 @@ class RISRecord:
 
         return [guess_lastname(author) for author in self.authors]
 
-    @property
+    @cached_property
     def location_fingerprint(self):
         """
         Returns a fingerprint of the record containing the journals ISSN,
@@ -149,7 +150,7 @@ class RISRecord:
                 self.issue,
                 self.issn,))
 
-    @property
+    @cached_property
     def title_authors_fingerprint(self):
         """
         Returns a fingerprint of the record composed of the title and list of
