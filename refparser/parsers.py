@@ -18,12 +18,6 @@ class RISRecord:
     def __init__(self, raw_data):
         self._raw_data = raw_data
 
-        self._raw_fields_aggregate = {}
-        for field, value in self.raw_fields():
-            if not field in self._raw_fields_aggregate:
-                self._raw_fields_aggregate[field] = []
-            self._raw_fields_aggregate[field].append(value)
-
     def raw_fields(self):
         'Returns a generator of tuples containing each raw fields name and value.'
         for line in self._raw_data.splitlines():
@@ -33,6 +27,15 @@ class RISRecord:
                     yield (field, value)
             except ValueError: # couldn't split into 2
                 pass
+
+    @property
+    def _raw_fields_aggregate(self):
+        aggregate = {}
+        for field, value in self.raw_fields():
+            if not field in aggregate:
+                aggregate[field] = []
+            aggregate[field].append(value)
+        return aggregate
 
     def _first_raw_aggregate(self, *fields):
         """
