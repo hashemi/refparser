@@ -1,9 +1,6 @@
 from .utils import cached_property
 from .base import BaseRecord
-from .exceptions import ReferenceSyntaxError, UnknownReferenceFormat
-from .normalizers import normalize_page_range, \
-    normalize_text_value, \
-    normalize_list_direction
+from .exceptions import ReferenceSyntaxError
 
 class RISRecord(BaseRecord):
     @classmethod

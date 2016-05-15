@@ -1,8 +1,6 @@
 from .utils import cached_property
-
 from .normalizers import normalize_page_range, \
-    normalize_text_value, \
-    normalize_list_direction
+    normalize_text_value, normalize_list_direction
 
 class BaseRecord:
     title = abstract = authors = journal_names = issn = volume = issue = \
