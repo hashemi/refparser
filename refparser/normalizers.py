@@ -35,3 +35,29 @@ def normalize_text_value(text):
     text = text.strip()
     text = text.lower()
     return text
+
+def is_head_heavy(items):
+    """
+    This algorthm takes a list of items and returns True if the first item is
+    larger than the last item and False otherwise. If the items are equal,
+    it repeats the test working its way from the outermost to inner most pair
+    of items. If the list is symmetrical it returns False.
+    """
+    head = 0
+    tail = len(items) - 1
+    while head < tail:
+        if items[head] > items[tail]:
+            return True
+        elif items[head] < items[tail]:
+            return False
+        head += 1
+        tail -= 1
+    return False
+
+def normalize_list_direction(items):
+    """
+    Returns the list of items in ordered in a canonical direction. Given lists
+    x and y, where y is in reverse order as x, this function should result in the
+    same list when given either x or y.
+    """
+    return list(reversed(items)) if is_head_heavy(items) else items

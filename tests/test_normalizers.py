@@ -59,3 +59,38 @@ class TestNormalizers(unittest.TestCase):
                     normalize_text_value(text),
                     expected
                 )
+
+    def test_is_head_heavy(self):
+        cases = (
+            ((1, 2, 3, 4, 5, 6), False),
+            ((1, 1, 1, 1, 1, 1), False),
+            ((1, 2, 3, 3, 2, 1), False),
+            ((1, 2, 3, 2, 1), False),
+            ((5, 4, 3, 2, 1), True),
+            ((5, 4, 3, 4, 5), False),
+            ((5, 6, 3, 5, 5), True),
+        )
+
+        for items, expected in cases:
+            with self.subTest(items=items):
+                self.assertEqual(
+                    is_head_heavy(items),
+                    expected
+                )
+
+    def test_normalize_list_direction(self):
+        cases = (
+            (['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd']),
+            (['d', 'c', 'b', 'a'], ['a', 'b', 'c', 'd']),
+            (
+                ['zoidberg', 'leela', 'rodriguez', 'conrad', 'fansworth'],
+                ['fansworth', 'conrad', 'rodriguez', 'leela', 'zoidberg'],
+            )
+        )
+
+        for items, expected in cases:
+            with self.subTest(items=items):
+                self.assertEqual(
+                    normalize_list_direction(items),
+                    expected
+                )
