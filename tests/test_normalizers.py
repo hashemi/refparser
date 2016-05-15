@@ -59,7 +59,3 @@ class TestNormalizers(unittest.TestCase):
                     normalize_text_value(text),
                     expected
                 )
-
-
-if __name__ == '__main__':
-    unittest.main()
