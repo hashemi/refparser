@@ -130,3 +130,9 @@ class TestRefParser(unittest.TestCase):
             self.complex_ris_record.location_fingerprint,
             '370-374$23119$4$9919-991X'
         )
+
+    def test_ris_record_title_authors_fingerprint(self):
+        self.assertEqual(
+            self.complex_ris_record.title_authors_fingerprint,
+            'fansworth.conrad.rodriguez.leela.zoidberg$a systematic review of the safety and efficacy of performing surgery on human subjects by alien surgeons'
+        )

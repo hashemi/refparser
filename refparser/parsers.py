@@ -10,7 +10,9 @@ class UnknownReferenceFormat(Exception):
     """
     pass
 
-from .normalizers import normalize_page_range
+from .normalizers import normalize_page_range, \
+    normalize_text_value, \
+    normalize_list_direction
 
 class RISRecord:
     def __init__(self, raw_data):
@@ -143,6 +145,24 @@ class RISRecord:
                 self.volume,
                 self.issue,
                 self.issn,))
+
+    @property
+    def title_authors_fingerprint(self):
+        """
+        Returns a fingerprint of the record composed of the title and list of
+        authors lastnames. Authors lastnames are listed alphabetically to
+        keep them canonical as some records list the authors in a reverse order.
+        """
+        if None in (self.title, self.authors_lastnames):
+            return None
+
+        lastnames = list(map(normalize_text_value, self.authors_lastnames))
+        lastnames = normalize_list_direction(lastnames)
+        lastnames = '.'.join(lastnames)
+
+        title = normalize_text_value(self.title)
+
+        return '$'.join((lastnames, title))
 
 def parse_records(data_file, data_format):
     """
