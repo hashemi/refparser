@@ -10,7 +10,7 @@ class UnknownReferenceFormat(Exception):
     """
     pass
 
-from normalizers import normalize_page_range
+from .normalizers import normalize_page_range
 
 class RISRecord:
     def __init__(self, raw_data):

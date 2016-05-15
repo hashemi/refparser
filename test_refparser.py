@@ -1,5 +1,5 @@
 import unittest
-from refparser import *
+from refparser.refparser import *
 
 class TestRefParser(unittest.TestCase):
     def setUp(self):
@@ -131,7 +131,7 @@ class TestRefParser(unittest.TestCase):
             '370-374$23119$4$9919-991X'
         )
 
-from normalizers import *
+from refparser.normalizers import *
 
 class TestNormalizers(unittest.TestCase):
     def test_normalize_page_range(self):
