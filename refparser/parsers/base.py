@@ -1,5 +1,5 @@
-from .utils import cached_property
-from .normalizers import normalize_page_range, \
+from ..utils import cached_property
+from ..normalizers import normalize_page_range, \
     normalize_text_value, normalize_list_direction
 
 class BaseRecord:

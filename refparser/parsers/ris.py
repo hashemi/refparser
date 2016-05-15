@@ -1,6 +1,6 @@
-from .utils import cached_property
+from ..utils import cached_property
 from .base import BaseRecord
-from .exceptions import ReferenceSyntaxError
+from ..exceptions import ReferenceSyntaxError
 
 class RISRecord(BaseRecord):
     @classmethod
