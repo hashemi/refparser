@@ -10,6 +10,8 @@ class UnknownReferenceFormat(Exception):
     """
     pass
 
+from normalizers import normalize_page_range
+
 class RISRecord:
     def __init__(self, raw_data):
         self._raw_data = raw_data
@@ -126,6 +128,21 @@ class RISRecord:
                 return author.rsplit(' ', 1)[-1]
 
         return [guess_lastname(author) for author in self.authors]
+
+    @property
+    def location_fingerprint(self):
+        """
+        Returns a fingerprint of the record containing the journals ISSN,
+        volume, issue and pages. Returns None if any of this data is missing.
+        """
+        if None in (self.start_page, self.issue, self.volume, self.issn):
+            return None
+
+        return '$'.join((
+                (normalize_page_range(self.start_page, self.end_page)),
+                self.volume,
+                self.issue,
+                self.issn,))
 
 def parse_records(data_file, data_format):
     """

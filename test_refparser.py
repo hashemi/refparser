@@ -125,6 +125,12 @@ class TestRefParser(unittest.TestCase):
 
         self.assertEqual(record_values, expected_values)
 
+    def test_ris_record_location_fingerprint(self):
+        self.assertEqual(
+            self.complex_ris_record.location_fingerprint,
+            '370-374$23119$4$9919-991X'
+        )
+
 from normalizers import *
 
 class TestNormalizers(unittest.TestCase):
