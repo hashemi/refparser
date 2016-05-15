@@ -169,5 +169,29 @@ class TestNormalizers(unittest.TestCase):
                     expected_result
                 )
 
+    def test_normalize_text_valie(self):
+        cases = (
+            ('Rodríguez', 'rodriguez'),
+            (
+                'Alcohol for robot lubrication — a systmeatic review.',
+                'alcohol for robot lubrication a systmeatic review'
+            ),
+            (
+                'Testing: when is it safe to stop?',
+                'testing when is it safe to stop'
+            ),
+            (
+                'Objectives: To test our theory.\nMethodology: Reasonable.',
+                'objectives to test our theory methodology reasonable'
+            )
+        )
+        for text, expected in cases:
+            with self.subTest():
+                self.assertEqual(
+                    normalize_text_value(text),
+                    expected
+                )
+
+
 if __name__ == '__main__':
     unittest.main()
