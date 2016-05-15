@@ -16,6 +16,31 @@ from .normalizers import normalize_page_range, \
     normalize_list_direction
 
 class RISRecord:
+    @classmethod
+    def parse(cls, data):
+        in_record = False
+        record = ''
+
+        for line in data:
+            if line.startswith('TY  - '):
+                if in_record:
+                    raise ReferenceSyntaxError
+                record = line
+                in_record = True
+            elif line.startswith('ER  - '):
+                if not in_record:
+                    raise ReferenceSyntaxError
+                record += line
+                in_record = False
+                yield cls(record)
+            else:
+                if in_record:
+                    record += line
+
+        if in_record:
+            # reached end of file with an open record
+            raise ReferenceSyntaxError
+
     def __init__(self, raw_data):
         self._raw_data = raw_data
 
@@ -174,35 +199,11 @@ def parse_records(data_file, data_format):
     Currently accepts RIS and PubMed file formats.
     """
     if data_format == 'RIS':
-        return _parse_records_ris(data_file)
+        return (r._raw_data for r in RISRecord.parse(data_file))
     elif data_format == 'PubMed':
         return _parse_records_pubmed(data_file)
     else:
         raise UnknownReferenceFormat
-
-def _parse_records_ris(data_file):
-    in_record = False
-    record = ''
-
-    for l in data_file:
-        if l.startswith('TY  - '):
-            if in_record:
-                raise ReferenceSyntaxError
-            record = l
-            in_record = True
-        elif l.startswith('ER  - '):
-            if not in_record:
-                raise ReferenceSyntaxError
-            record += l
-            in_record = False
-            yield record
-        else:
-            if in_record:
-                record += l
-
-    if in_record:
-        # reached end of file with an open record
-        raise ReferenceSyntaxError
 
 def _parse_records_pubmed(data_file):
     record = ''
