@@ -73,18 +73,10 @@ class RISRecord(BaseRecord):
         return self._first_raw_value('IS')
 
     @cached_property
-    def _pages(self):
+    def pages(self):
         start = self._first_raw_value('SP')
         end = self._first_raw_value('EP')
         if start and not end:
             if '-' in start:
                 start, end = start.split('-', 1)
         return (start, end)
-
-    @cached_property
-    def start_page(self):
-        return self._pages[0]
-
-    @cached_property
-    def end_page(self):
-        return self._pages[1]

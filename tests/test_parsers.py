@@ -122,8 +122,7 @@ class TestRefParser(unittest.TestCase):
             (r.issn, '9919-991X'),
             (r.volume, '23119'),
             (r.issue, '4'),
-            (r.start_page, '370'),
-            (r.end_page, '374'),
+            (r.pages, ('370', '374')),
         )
 
         record_values, expected_values = zip(*comparisons)
@@ -159,8 +158,7 @@ of this practice are lacking. More research in this area is needed."""),
             (r.issn, '9919-991X'),
             (r.volume, '23119'),
             (r.issue, '4'),
-            (r.start_page, '370'),
-            (r.end_page, '4'),
+            (r.pages, ('370', '4')),
         )
 
         record_values, expected_values = zip(*comparisons)

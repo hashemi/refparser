@@ -4,7 +4,8 @@ from ..normalizers import normalize_page_range, \
 
 class BaseRecord:
     title = abstract = authors = journal_names = issn = volume = issue = \
-        start_page = end_page = property(lambda self: None)
+        property(lambda self: None)
+    pages = property(lambda self: (None, None))
 
     def __init__(self, raw_data):
         self._raw_data = raw_data
@@ -78,11 +79,11 @@ class BaseRecord:
         Returns a fingerprint of the record containing the journals ISSN,
         volume, issue and pages. Returns None if any of this data is missing.
         """
-        if None in (self.start_page, self.issue, self.volume, self.issn):
+        if None in (self.pages[0], self.issue, self.volume, self.issn):
             return None
 
         return '$'.join((
-                (normalize_page_range(self.start_page, self.end_page)),
+                (normalize_page_range(*self.pages)),
                 self.volume,
                 self.issue,
                 self.issn,))

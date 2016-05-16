@@ -74,7 +74,7 @@ class MedlineRecord(BaseRecord):
         return self._first_raw_value('IP')
 
     @cached_property
-    def _pages(self):
+    def pages(self):
         pagination = self._first_raw_value('PG').strip()
 
         # remove extra comments that can appear after space, comma or semicolon
@@ -86,11 +86,3 @@ class MedlineRecord(BaseRecord):
             start, end = (pagination, None)
 
         return (start, end)
-
-    @cached_property
-    def start_page(self):
-        return self._pages[0]
-
-    @cached_property
-    def end_page(self):
-        return self._pages[1]
