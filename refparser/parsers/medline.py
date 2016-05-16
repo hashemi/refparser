@@ -1,3 +1,4 @@
+import re
 from ..utils import cached_property
 from .base import BaseRecord
 
@@ -35,3 +36,61 @@ class MedlineRecord(BaseRecord):
                     pass
         if current_field:
             yield(current_field, current_value)
+
+    @cached_property
+    def title(self):
+        return self._first_raw_value('TI')
+
+    @cached_property
+    def abstract(self):
+        return self._first_raw_value('AB')
+
+    @cached_property
+    def authors(self):
+        # FAU is full author name. PubMed recrods often have both FAU and AU
+        return self._first_raw_aggregate('FAU', 'AU')
+
+    @cached_property
+    def journal_names(self):
+        # a record may include multiple names (eg, abbreviated & full)
+        value = self._all_raw_values('TA', 'JT')
+        if value:
+            return set(value)
+
+    @cached_property
+    def issn(self):
+        value = self._first_raw_value('IS')
+        if value:
+            # remove details of the ISSN which appear after a space
+            value = value.split(' ', 1)[0]
+        return value
+
+    @cached_property
+    def volume(self):
+        return self._first_raw_value('VI')
+
+    @cached_property
+    def issue(self):
+        return self._first_raw_value('IP')
+
+    @cached_property
+    def _pages(self):
+        pagination = self._first_raw_value('PG').strip()
+
+        # remove extra comments that can appear after space, comma or semicolon
+        pagination = re.sub('[ ,;].*$', '', pagination)
+
+        if '-' in pagination:
+            start, end = pagination.split('-', 1)
+        else:
+            start, end = (pagination, None)
+
+        return (start, end)
+
+    @cached_property
+    def start_page(self):
+        return self._pages[0]
+
+    @cached_property
+    def end_page(self):
+        return self._pages[1]

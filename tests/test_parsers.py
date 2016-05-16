@@ -7,6 +7,9 @@ class TestRefParser(unittest.TestCase):
         with open('test_data/ris/complex_record.ris') as f: ris_record = f.read()
         self.complex_ris_record = RISRecord(ris_record)
 
+        with open('test_data/pubmed/complex_record.txt') as f: medline_record = f.read()
+        self.complex_medline_record = MedlineRecord(medline_record)
+
     def test_parsing_records(self):
         """
         Parse all the records contained within a file and compare the first and
@@ -127,14 +130,55 @@ class TestRefParser(unittest.TestCase):
 
         self.assertEqual(record_values, expected_values)
 
-    def test_ris_record_location_fingerprint(self):
-        self.assertEqual(
-            self.complex_ris_record.location_fingerprint,
-            '370-374$23119$4$9919-991X'
+    def test_medline_record_data(self):
+        self.maxDiff = None
+        r = self.complex_medline_record
+        comparisons = (
+            (r.title, 'A systematic review of the safety and efficacy of performing surgery on human\nsubjects by alien surgeons'),
+            (r.abstract, \
+"""Objective: With the increasing human population and their unhealthy habits,
+there has been a relative shortage in  surgeons with human experience. Some
+humans have resorted to surgeons with a alien experience to cover the shortage.
+In this systematic review, we evaluated the literature on outcomes of human
+surgery performed by alien surgeons. Methods: A librarian (TL) performed a
+search of 2,422 databases. The Universal Translater was used to translate all
+results into gibberish for the purposes of duplicate discovered and removal.
+Further duplicate removal by hand was performed by one reviewer (HC). A robot
+was available (BBR). Two independent reviewers (HC and AW) then screened the
+unique citations by title and abstract then by full-text content. Results:
+the initial search resulted in 2.7e21. The Universal Translater removed 1.5e21
+duplicates and another 1.2e21 duplicates were removed by hand. There were 1.2
+million unique citations screened by title and abstract and 23 by full-text.
+Two citations met the inclusion criteria, both were from the same group (the
+authors group). Conclusion: Human surgery by alien surgeons is a promising
+alternative to cover the shortage of human surgeons. However, data on the safety
+of this practice are lacking. More research in this area is needed."""),
+            (r.authors, ['Zoidberg, JA', 'Leela, T', 'Rodríguez, BB', 'Conrad, H', 'Fansworth, H']),
+            (r.authors_lastnames, ['Zoidberg', 'Leela', 'Rodríguez', 'Conrad', 'Fansworth']),
+            (r.journal_names, {'Journal of earth creatures surgery', 'J Ear Creat Surg'}),
+            (r.issn, '9919-991X'),
+            (r.volume, '23119'),
+            (r.issue, '4'),
+            (r.start_page, '370'),
+            (r.end_page, '4'),
         )
 
-    def test_ris_record_title_authors_fingerprint(self):
-        self.assertEqual(
-            self.complex_ris_record.title_authors_fingerprint,
-            'fansworth.conrad.rodriguez.leela.zoidberg$a systematic review of the safety and efficacy of performing surgery on human subjects by alien surgeons'
-        )
+        record_values, expected_values = zip(*comparisons)
+
+        self.assertEqual(record_values, expected_values)
+
+    def test_ris_record_location_fingerprint(self):
+        for r in (self.complex_ris_record, self.complex_medline_record):
+            with self.subTest(record_type=type(r).__name__):
+                self.assertEqual(
+                    r.location_fingerprint,
+                    '370-374$23119$4$9919-991X'
+                )
+
+    def test_records_title_authors_fingerprint(self):
+        for r in (self.complex_ris_record, self.complex_medline_record):
+            with self.subTest(record_type=type(r).__name__):
+                self.assertEqual(
+                    r.title_authors_fingerprint,
+                    'fansworth.conrad.rodriguez.leela.zoidberg$a systematic review of the safety and efficacy of performing surgery on human subjects by alien surgeons'
+                )
