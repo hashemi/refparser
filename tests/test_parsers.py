@@ -2,7 +2,7 @@ import unittest
 from refparser.parsers import *
 from refparser.exceptions import *
 
-class TestRefParser(unittest.TestCase):
+class TestParsers(unittest.TestCase):
     def setUp(self):
         with open('test_data/ris/complex_record.ris') as f: ris_record = f.read()
         self.complex_ris_record = RISRecord(ris_record)
