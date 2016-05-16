@@ -58,11 +58,13 @@ class BaseRecord:
             return None
 
         def guess_lastname(author):
-            if ',' in author:
+            if not author:
+                return author
+            elif ',' in author:
                 # Lastname, F. or Lastname, Firstname
                 return author.split(',', 1)[0]
-            elif author.endswith('.'):
-                # Lastname F.
+            elif author.endswith('.') or author[-1].isupper():
+                # Lastname F. or Lastname F
                 return author.split(' ', 1)[0]
             else:
                 # Firstname Lastname
