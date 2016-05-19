@@ -17,8 +17,8 @@ AB  - Objective: With the increasing human population and their unhealthy habits
       million unique citations screened by title and abstract and 23 by full-text.
       Two citations met the inclusion criteria, both were from the same group (the
       authors group). Conclusion: Human surgery by alien surgeons is a promising
-      alternative to cover the shortage of human surgeons. However, data on the safety
-      of this practice are lacking. More research in this area is needed.
+      alternative to cover the shortage of human surgeons. However, data on the
+      safety of this practice are lacking. More research in this area is needed.
 FAU - Zoidberg, JA
 AU  - Zoidberg JA
 FAU - Leela, T

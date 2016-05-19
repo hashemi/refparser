@@ -85,7 +85,9 @@ class TestParsers(unittest.TestCase):
                 [
                     ('PMID', '123456'),
                     ('OWN', 'NLM'),
-                    ('AB', 'This is an example of a long field where the field might actually end up\nbeing broken down over multiple lines.'),
+                    ('AB', 'This is an example of a long field where the' +
+                           ' field might actually end up\nbeing broken down' +
+                           ' over multiple lines.'),
                     ('STAT', 'Publisher'),
                 ]),
         )
@@ -122,8 +124,36 @@ class TestParsers(unittest.TestCase):
     def test_ris_record_data(self):
         r = self.complex_ris_record
         comparisons = (
-            (r.title, 'A systematic review of the safety and efficacy of performing surgery on human subjects by alien surgeons'),
-            (r.abstract, 'Objective: With the increasing human population and their unhealthy habits, there has been a relative shortage in  surgeons with human experience. Some humans have resorted to surgeons with a alien experience to cover the shortage. In this systematic review, we evaluated the literature on outcomes of human surgery performed by alien surgeons. Methods: A librarian (TL) performed a search of 2,422 databases. The Universal Translater was used to translate all results into gibberish for the purposes of duplicate discovered and removal. Further duplicate removal by hand was performed by one reviewer (HC). A robot was available (BBR). Two independent reviewers (HC and AW) then screened the unique citations by title and abstract then by full-text content. Results: the initial search resulted in 2.7e21. The Universal Translater removed 1.5e21 duplicates and another 1.2e21 duplicates were removed by hand. There were 1.2 million unique citations screened by title and abstract and 23 by full-text. Two citations met the inclusion criteria, both were from the same group (the authors group). Conclusion: Human surgery by alien surgeons is a promising alternative to cover the shortage of human surgeons. However, data on the safety of this practice are lacking. More research in this area is needed.'),
+            (r.title, 'A systematic review of the safety and efficacy of '
+                      'performing surgery on human subjects by alien '
+                      'surgeons'),
+            (r.abstract, 'Objective: With the increasing human population and '
+                         'their unhealthy habits, there has been a relative '
+                         'shortage in  surgeons with human experience. Some '
+                         'humans have resorted to surgeons with a alien '
+                         'experience to cover the shortage. In this '
+                         'systematic review, we evaluated the literature on '
+                         'outcomes of human surgery performed by alien '
+                         'surgeons. Methods: A librarian (TL) performed a '
+                         'search of 2,422 databases. The Universal Translater '
+                         'was used to translate all results into gibberish '
+                         'for the purposes of duplicate discovered and '
+                         'removal. Further duplicate removal by hand was '
+                         'performed by one reviewer (HC). A robot was '
+                         'available (BBR). Two independent reviewers (HC and '
+                         'AW) then screened the unique citations by title and '
+                         'abstract then by full-text content. Results: the '
+                         'initial search resulted in 2.7e21. The Universal '
+                         'Translater removed 1.5e21 duplicates and another '
+                         '1.2e21 duplicates were removed by hand. There were '
+                         '1.2 million unique citations screened by title and '
+                         'abstract and 23 by full-text. Two citations met the '
+                         'inclusion criteria, both were from the same group '
+                         '(the authors group). Conclusion: Human surgery by '
+                         'alien surgeons is a promising alternative to cover '
+                         'the shortage of human surgeons. However, data on '
+                         'the safety of this practice are lacking. More '
+                         'research in this area is needed.'),
             (r.authors, ['Zoidberg J.A.', 'Leela, T.',
                          'Bender Bending Rodríguez', 'Conrad, H.',
                          'Fansworth H.']),
@@ -145,7 +175,9 @@ class TestParsers(unittest.TestCase):
         self.maxDiff = None
         r = self.complex_medline_record
         comparisons = (
-            (r.title, 'A systematic review of the safety and efficacy of performing surgery on human\nsubjects by alien surgeons'),
+            (r.title, 'A systematic review of the safety and efficacy of '
+                      'performing surgery on human\nsubjects by alien '
+                      'surgeons'),
             (r.abstract,
                 """Objective: With the increasing human population and their unhealthy habits,
 there has been a relative shortage in  surgeons with human experience. Some
@@ -162,8 +194,8 @@ duplicates and another 1.2e21 duplicates were removed by hand. There were 1.2
 million unique citations screened by title and abstract and 23 by full-text.
 Two citations met the inclusion criteria, both were from the same group (the
 authors group). Conclusion: Human surgery by alien surgeons is a promising
-alternative to cover the shortage of human surgeons. However, data on the safety
-of this practice are lacking. More research in this area is needed."""),
+alternative to cover the shortage of human surgeons. However, data on the
+safety of this practice are lacking. More research in this area is needed."""),
             (r.authors, ['Zoidberg, JA', 'Leela, T', 'Rodríguez, BB',
                          'Conrad, H', 'Fansworth, H']),
             (r.authors_lastnames, ['Zoidberg', 'Leela', 'Rodríguez',
@@ -193,5 +225,7 @@ of this practice are lacking. More research in this area is needed."""),
             with self.subTest(record_type=type(r).__name__):
                 self.assertEqual(
                     r.title_authors_fingerprint,
-                    'fansworth.conrad.rodriguez.leela.zoidberg$a systematic review of the safety and efficacy of performing surgery on human subjects by alien surgeons'
+                    'fansworth.conrad.rodriguez.leela.zoidberg$a systematic '
+                    'review of the safety and efficacy of performing surgery '
+                    'on human subjects by alien surgeons'
                 )
