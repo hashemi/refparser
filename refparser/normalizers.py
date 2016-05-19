@@ -1,5 +1,7 @@
 import unicodedata
 import re
+from .issn_mappings import _issn_mappings
+
 
 def normalize_page_range(start, end):
     if start is None:
@@ -16,16 +18,18 @@ def normalize_page_range(start, end):
 
     return '{}-{}'.format(start, end)
 
-from .issn_mappings import _issn_mappings
+
 def normalize_issn(issn):
     return _issn_mappings.get(issn, issn)
 
-# From http://stackoverflow.com/q/34753821
+
 def remove_accents(text):
+    # From http://stackoverflow.com/q/34753821
     """This method removes all diacritic marks from the given string"""
     text = unicodedata.normalize('NFD', text)
     text = ''.join(c for c in text if not unicodedata.combining(c))
     return unicodedata.normalize('NFC', text)
+
 
 def normalize_text_value(text):
     text = remove_accents(text)
@@ -35,6 +39,7 @@ def normalize_text_value(text):
     text = text.strip()
     text = text.lower()
     return text
+
 
 def is_head_heavy(items):
     """
@@ -54,10 +59,11 @@ def is_head_heavy(items):
         tail -= 1
     return False
 
+
 def normalize_list_direction(items):
     """
     Returns the list of items in ordered in a canonical direction. Given lists
-    x and y, where y is in reverse order as x, this function should result in the
-    same list when given either x or y.
+    x and y, where y is in reverse order as x, this function should result in
+    the same list when given either x or y.
     """
     return list(reversed(items)) if is_head_heavy(items) else items

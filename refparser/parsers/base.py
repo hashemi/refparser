@@ -2,6 +2,7 @@ from ..utils import cached_property
 from ..normalizers import normalize_page_range, \
     normalize_text_value, normalize_list_direction
 
+
 class BaseRecord:
     title = abstract = authors = journal_names = issn = volume = issue = \
         property(lambda self: None)
@@ -11,14 +12,15 @@ class BaseRecord:
         self._raw_data = raw_data
 
     def raw_fields(self):
-        'Returns a generator of tuples containing each raw fields name and value.'
+        """Returns a generator of tuples containing each raw fields name and
+        value."""
         pass
 
     @cached_property
     def _raw_fields_aggregate(self):
         aggregate = {}
         for field, value in self.raw_fields():
-            if not field in aggregate:
+            if field not in aggregate:
                 aggregate[field] = []
             aggregate[field].append(value)
         return aggregate
@@ -43,15 +45,16 @@ class BaseRecord:
 
     def _all_raw_values(self, *fields):
         """
-        Returns all values that match any of the passed fields or None if no values
-        were found. The values are ordered by the order of the passed field names first
-        then by the order in which they appear in the record.
+        Returns all values that match any of the passed fields or None if no
+        values were found. The values are ordered by the order of the passed
+        field names first then by the order in which they appear in the record.
         """
         values = []
         for field in fields:
             if field in self._raw_fields_aggregate:
                 values += self._raw_fields_aggregate[field]
-        if values: return values
+        if values:
+            return values
 
     @cached_property
     def authors_lastnames(self):
@@ -93,7 +96,7 @@ class BaseRecord:
         """
         Returns a fingerprint of the record composed of the title and list of
         authors lastnames. Authors lastnames are listed alphabetically to
-        keep them canonical as some records list the authors in a reverse order.
+        keep them canonical as some records list the authors in reverse order.
         """
         if None in (self.title, self.authors_lastnames):
             return None

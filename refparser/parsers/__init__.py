@@ -2,6 +2,7 @@ from ..exceptions import UnknownReferenceFormat
 from .ris import RISRecord
 from .medline import MedlineRecord
 
+
 def parse_records(data_file, data_format):
     """
     Generates records in raw data from a file containing multiple records.
@@ -13,6 +14,7 @@ def parse_records(data_file, data_format):
         return (r._raw_data for r in MedlineRecord.parse(data_file))
     else:
         raise UnknownReferenceFormat
+
 
 def parse_fields(raw_record, data_format):
     """
@@ -26,8 +28,10 @@ def parse_fields(raw_record, data_format):
     else:
         raise UnknownReferenceFormat
 
+
 def _parse_fields_ris(raw_record):
     return RISRecord(raw_record).raw_fields()
+
 
 def _parse_fields_pubmed(raw_record):
     return MedlineRecord(raw_record).raw_fields()

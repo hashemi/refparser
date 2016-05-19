@@ -2,6 +2,7 @@ from ..utils import cached_property
 from .base import BaseRecord
 from ..exceptions import ReferenceSyntaxError
 
+
 class RISRecord(BaseRecord):
     @classmethod
     def parse(cls, data):
@@ -29,13 +30,14 @@ class RISRecord(BaseRecord):
             raise ReferenceSyntaxError
 
     def raw_fields(self):
-        'Returns a generator of tuples containing each raw fields name and value.'
+        """Returns a generator of tuples containing each raw fields name and
+        value."""
         for line in self._raw_data.splitlines():
             try:
                 field, value = line.split('  - ', 1)
                 if len(field) == 2:
                     yield (field, value)
-            except ValueError: # couldn't split into 2
+            except ValueError:  # couldn't split into 2
                 pass
 
     @cached_property
@@ -47,7 +49,8 @@ class RISRecord(BaseRecord):
         value = self._first_raw_aggregate('AB', 'N2')
 
         # some records break the abstract into several records
-        if value: return '\n'.join(value)
+        if value:
+            return '\n'.join(value)
 
     @cached_property
     def authors(self):

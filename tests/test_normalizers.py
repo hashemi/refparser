@@ -1,5 +1,8 @@
 import unittest
-from refparser.normalizers import *
+from refparser.normalizers import normalize_page_range, \
+    normalize_issn, normalize_text_value, is_head_heavy, \
+    normalize_list_direction
+
 
 class TestNormalizers(unittest.TestCase):
     def test_normalize_page_range(self):

@@ -2,6 +2,7 @@ import re
 from ..utils import cached_property
 from .base import BaseRecord
 
+
 class MedlineRecord(BaseRecord):
     @classmethod
     def parse(cls, data):
@@ -18,7 +19,8 @@ class MedlineRecord(BaseRecord):
             yield cls(record)
 
     def raw_fields(self):
-        'Returns a generator of tuples containing each raw fields name and value.'
+        """Returns a generator of tuples containing each raw fields name and
+        value."""
         current_field = ''
         current_value = ''
         for line in self._raw_data.splitlines():
