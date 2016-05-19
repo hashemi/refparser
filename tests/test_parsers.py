@@ -1,6 +1,5 @@
 import unittest
-from refparser.parsers import RISRecord, MedlineRecord, parse_records, \
-    parse_fields
+from refparser.parsers import RISRecord, MedlineRecord
 from refparser.exceptions import ReferenceSyntaxError
 
 
@@ -22,22 +21,22 @@ class TestParsers(unittest.TestCase):
         records_files = (
             (
                 'test_data/ris/valid.ris',
-                'RIS',
+                RISRecord,
                 'test_data/ris/valid_first_record.ris',
                 'test_data/ris/valid_last_record.ris',
             ),
             (
                 'test_data/pubmed/valid.txt',
-                'PubMed',
+                MedlineRecord,
                 'test_data/pubmed/valid_first_record.txt',
                 'test_data/pubmed/valid_last_record.txt',
             )
         )
 
-        for data_fn, data_format, first_exp_fn, last_exp_fn in records_files:
-            with self.subTest(data_fn=data_fn, data_format=data_format):
+        for data_fn, record_type, first_exp_fn, last_exp_fn in records_files:
+            with self.subTest(data_fn=data_fn, record_type=record_type):
                 with open(data_fn, 'r') as data_file:
-                    parsed_records = parse_records(data_file, data_format)
+                    parsed_records = record_type.parse(data_file)
                     first_record = next(parsed_records)
                     last_record = first_record
                     for last_record in parsed_records:
@@ -47,7 +46,8 @@ class TestParsers(unittest.TestCase):
                         with self.subTest(exp_fn=exp_fn):
                             with open(exp_fn, 'r') as exp_file:
                                 exp_record = exp_file.read()
-                            self.assertEqual(exp_record, parsed_record)
+                            self.assertEqual(exp_record,
+                                             parsed_record._raw_data)
 
     def test_parsing_invalid_files(self):
         """
@@ -55,16 +55,16 @@ class TestParsers(unittest.TestCase):
         raise ReferenceSyntaxError as expected.
         """
         invalid_files = (
-            ('ris/unclosed_first_record.ris', 'RIS'),
-            ('ris/unclosed_last_record.ris', 'RIS'),
-            ('ris/unopened_first_record.ris', 'RIS'),
-            ('ris/unopened_last_record.ris', 'RIS'),
+            ('ris/unclosed_first_record.ris', RISRecord),
+            ('ris/unclosed_last_record.ris', RISRecord),
+            ('ris/unopened_first_record.ris', RISRecord),
+            ('ris/unopened_last_record.ris', RISRecord),
         )
-        for filename, data_format in invalid_files:
-            with self.subTest(filename=filename, data_format=data_format):
+        for filename, record_type in invalid_files:
+            with self.subTest(filename=filename, record_type=record_type):
                 with open('test_data/{}'.format(filename)) as data_file:
                     with self.assertRaises(ReferenceSyntaxError):
-                        for _ in parse_records(data_file, data_format):
+                        for _ in record_type.parse(data_file):
                             pass
 
     def test_parsing_fields(self):
@@ -74,14 +74,14 @@ class TestParsers(unittest.TestCase):
         provided.
         """
         record_files_and_fields = (
-            ('test_data/ris/valid.ris', 'RIS',
+            ('test_data/ris/valid.ris', RISRecord,
                 [
                     ('TY', 'JOUR'),
                     ('ID', '123456'),
                     ('A1', 'Cushing, Harvey'),
                     ('ER', ''),
                 ]),
-            ('test_data/pubmed/valid.txt', 'PubMed',
+            ('test_data/pubmed/valid.txt', MedlineRecord,
                 [
                     ('PMID', '123456'),
                     ('OWN', 'NLM'),
@@ -91,13 +91,13 @@ class TestParsers(unittest.TestCase):
                     ('STAT', 'Publisher'),
                 ]),
         )
-        for filename, data_format, expected_fields in record_files_and_fields:
+        for filename, record_type, expected_fields in record_files_and_fields:
             with self.subTest(filename=filename,
-                              data_format=data_format,
+                              record_type=record_type,
                               expected_fields=expected_fields):
                 with open(filename, 'r') as data_file:
-                    first_record = next(parse_records(data_file, data_format))
-                parsed_fields = list(parse_fields(first_record, data_format))
+                    first_record = next(record_type.parse(data_file))
+                parsed_fields = list(first_record.raw_fields())
                 self.assertEqual(parsed_fields, expected_fields)
 
     def test_all_raw_values(self):
