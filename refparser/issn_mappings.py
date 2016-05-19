@@ -11,7 +11,7 @@ The dictionary was generated using the following Python script:
     def parse_journal_records(f):
         journal_record = {}
         for l in f:
-            if l.strip() == '--------------------------------------------------------':
+            if l.strip() == '-' * 56:
                 if len(journal_record) > 0:
                     yield journal_record
                     journal_record = {}

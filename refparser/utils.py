@@ -1,4 +1,4 @@
-class cached_property(object):
+class cached_property(object):  # noqa
     # From the excellent Bottle (c) Marcel Hellkamp
     # https://github.com/bottlepy/bottle
     # MIT licensed
