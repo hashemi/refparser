@@ -82,13 +82,14 @@ class BaseRecord:
         Returns a fingerprint of the record containing the journals ISSN,
         volume, issue and pages. Returns None if any of this data is missing.
         """
-        if None in (self.pages[0], self.issue, self.volume, self.issn):
+        if None in (self.pages[0], self.volume, self.issn):
             return None
+        issue = self.issue if self.issue is not None else ''
 
         return '$'.join((
                 (normalize_page_range(*self.pages)),
                 self.volume,
-                self.issue,
+                issue,
                 self.issn,))
 
     @cached_property
