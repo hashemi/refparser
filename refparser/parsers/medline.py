@@ -31,13 +31,13 @@ class MedlineRecord(BaseRecord):
                     field, value = line.split('- ', 1)
                     if len(field) == 4:
                         if current_field:
-                            yield(current_field, current_value)
+                            yield(current_field, current_value.strip())
                         current_field = field.strip()
                         current_value = value
                 except ValueError:
                     pass
         if current_field:
-            yield(current_field, current_value)
+            yield(current_field, current_value.strip())
 
     @cached_property
     def title(self):

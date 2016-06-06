@@ -36,7 +36,7 @@ class RISRecord(BaseRecord):
             try:
                 field, value = line.split('  - ', 1)
                 if len(field) == 2:
-                    yield (field, value)
+                    yield (field, value.strip())
             except ValueError:  # couldn't split into 2
                 pass
 
