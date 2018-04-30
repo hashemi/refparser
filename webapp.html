@@ -1,0 +1,60 @@
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/2.2.2/diff.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
+  <style>
+    #diff_view td {
+      padding: 5px;
+      border: 1px solid grey;
+    }
+    .first .first-only, .second .second-only {
+      background-color: yellow;
+    }
+    .first .second-only, .second .first-only {
+      display: none;
+    }
+    .title {
+      font-weight: bold;
+    }
+    .authors {
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <script id="diff_template" type="x-tmpl-mustache">
+  {{#items}}
+  <tr><td class='first {{field}}'>{{{diff}}}</td><td class='second {{field}}'>{{{diff}}}</td></td>
+  {{/items}}
+  </script>
+
+  <table id="diff_view"></table>
+
+  <script type='text/javascript'>
+    var view = {
+      items : [
+
+      ],
+      diff: function() {
+        var diff = JsDiff.diffChars(this.first, this.second);
+        result = '';
+        diff.forEach(function(part) {
+          if (part.removed) {
+            result += '<span class="first-only">';
+          } else if (part.added) {
+            result += '<span class="second-only">';
+          }
+          result += part.value;
+          if (part.added || part.removed) {
+            result += '</span>';
+          }
+        });
+        return result;
+      }
+    };
+    var template = document.getElementById('diff_template').innerHTML;
+    var output = Mustache.render(template, view);
+    document.getElementById('diff_view').innerHTML = output;
+  </script>
+</body>
+</html>
